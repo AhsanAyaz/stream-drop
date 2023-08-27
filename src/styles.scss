@@ -155,15 +155,17 @@ body {
 }
 .dropping.dropped .dropping__text {
   position: relative;
-  top: 30px;
 }
 .dropping.dropped .dropping__parachute {
   /* transform: translateY(40px) scale(0) ; */
-  animation: rocketDroppedAnim ease-in 1s forwards;
+  // animation: rocketDroppedAnim ease-in 1s forwards;
+  top: 30px;
+  display: none;
 }
 .dropping.dropped .dropping__entity {
   bottom: 0;
   top: unset !important;
+  position: relative;
 }
 
 @keyframes rocketDroppedAnim {

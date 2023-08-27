@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
+import { Firestore, collection, deleteDoc, collectionChanges, DocumentChangeType, onSnapshot, getDocs, CollectionReference } from '@angular/fire/firestore';
+import { AngularFireModule } from '@angular/fire/compat';
 
 type DroppedElement = {
   el: HTMLElement,
@@ -8,6 +10,12 @@ type DroppedElement = {
   url: string,
   channel: string
   angle: number;
+}
+
+type Message = {
+  imageUrl: string;
+  username: string;
+  text: string;
 }
 
 type ScoreItem = {
@@ -18,11 +26,11 @@ type ScoreItem = {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet],
+  imports: [CommonModule, RouterOutlet, AngularFireModule],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   originalParachuteHeight = 100;
   originalEntityHeight = 40;
   originalEntityTop = 20;
@@ -49,52 +57,47 @@ export class AppComponent {
   timeoutTimer!: ReturnType<typeof setInterval>;
   scoreList: ScoreItem[] = [];
   elements: DroppedElement[] = [];
-  // async parseDropCommand({ message }) {
-  //   const subCommand = message.split('!drop')[1].trim();
-  //   switch (subCommand) {
-  //     case '':
-  //     case 'me':
-  //       const db = getFirestore();
-  //       const followerRef = doc(
-  //         collection(doc(collection(db, 'twitch-bot'), 'chat'), 'followers'),
-  //         tags.username
-  //       );
-  //       await sleep(1500);
-  //       const data = await getDoc(followerRef);
-  //       const { profileImageUrl, username } = data.data();
-  //       drop({ url: profileImageUrl, username, channel });
-  //       break;
-  //     default:
-  //       const emojiRawString = tags['emotes-raw'];
-  //       if (!emojiRawString) {
-  //         return;
-  //       }
-  //       const emojis = emojiRawString.split('/');
-  //       emojis.forEach((emojiStr) => {
-  //         const emojiId = emojiStr.split(':')[0];
-  //         let url = `https://static-cdn.jtvnw.net/emoticons/v1/${emojiId}/2.0`;
-  //         drop({ url, username: tags.username, channel });
-  //       });
-  //       break;
-  //   }
-  // };
+  firestore = inject(Firestore);
 
-  // client.on('message', async (channel, tags, message, self) => {
-  //   if (self) return;
-  //   if (!message.toLowerCase().startsWith('!drop')) {
-  //     return;
-  //   }
+  ngOnInit(): void {
+    this.resetMessagesAndObserve();
+  }
 
-  //   const isDropCommand = message.trim().startsWith('!drop');
+  async deleteCol(messagesCollectionRef: CollectionReference) {
 
-  //   if (!isDropCommand) {
-  //     return;
-  //   }
-  //   showTargetDartBoard();
-  //   showScoreBoard();
-  //   extendTimeout();
-  //   parseDropCommand({ channel, tags, message });
-  // });
+    // You can use the QuerySnapshot above like in the example i linked
+    (await getDocs(messagesCollectionRef)).docs.forEach(doc => {
+      deleteDoc(doc.ref);
+    })
+  }
+
+  async resetMessagesAndObserve() {
+    const messagesCollectionRef = collection(this.firestore, '/messages');
+    await this.deleteCol(messagesCollectionRef)
+    collectionChanges(messagesCollectionRef)
+      .subscribe({
+        next: (changes) => {
+          changes.forEach(change => {
+            if (change.type === 'added') {
+              const message = change.doc.data() as Message;
+              this.onMessage(message);
+            }
+          })
+        }
+      })
+  }
+
+  onMessage(message: Message) {
+    this.drop({
+      url: message.imageUrl,
+      username: message.username,
+      channel: ''
+    });
+    this.showTargetDartBoard();
+    this.showTargetDartBoard();
+    this.showScoreBoard();
+    this.extendTimeout();
+  }
 
   dropButtonClick() {
     this.drop({

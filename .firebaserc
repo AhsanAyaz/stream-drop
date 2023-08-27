@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "stream-bot-dc226": {
+      "hosting": {
+        "stream-drop": [
+          "stream-bot-dc226"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "stream-bot-dc226"
+  }
+}
