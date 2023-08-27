@@ -1,1 +1,202 @@
 /* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+a {
+  color: rgb(0, 100, 200);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+a:visited {
+  color: rgb(0, 80, 160);
+}
+
+label {
+  display: block;
+}
+
+input,
+button,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  -webkit-padding: 0.4em 0;
+  padding: 0.4em;
+  margin: 0 0 0.5em 0;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+}
+
+input:disabled {
+  color: #ccc;
+}
+
+button {
+  color: #333;
+  background-color: #f4f4f4;
+  outline: none;
+}
+
+button:disabled {
+  color: #999;
+}
+
+button:not(:disabled):active {
+  background-color: #ddd;
+}
+
+button:focus {
+  border-color: #666;
+}
+
+/* Frameworks */
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+}
+
+.frameworks-container {
+  position: relative;
+  flex: 1;
+}
+
+.logo {
+  width: 100px;
+  height: 100px;
+  background-size: contain;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  position: absolute;
+}
+
+
+.score-board {
+  position: fixed;
+  left: 20px;
+  top: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 0 20px 20px 20px;
+  color: white;
+}
+
+.score-board__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.score-board__item__score {
+  margin-left: 50px;
+}
+
+.dropping {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+}
+
+.dropping__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dropping__parachute {
+  transition: all ease 0.3s;
+}
+.dropping__entity {
+  animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
+  position: absolute;
+}
+
+.target-board {
+  width: 200px;
+  position: fixed;
+  bottom: -10px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  z-index: 1;
+  height: 40px;
+}
+
+.dropping__text {
+  -webkit-text-stroke: 1px black;
+  -webkit-text-fill-color: white;
+  font-weight: bold;
+  transition: all ease 0.3s;
+}
+
+.dropping.dropped .dropping__inner {
+  transform: rotate(0);
+  transform-origin: top left;
+}
+.dropping.dropped .dropping__text {
+  position: relative;
+  top: 30px;
+}
+.dropping.dropped .dropping__parachute {
+  /* transform: translateY(40px) scale(0) ; */
+  animation: rocketDroppedAnim ease-in 1s forwards;
+}
+.dropping.dropped .dropping__entity {
+  bottom: 0;
+  top: unset !important;
+}
+
+@keyframes rocketDroppedAnim {
+  from {
+    transform: translateY(0) rotate(180deg);
+    bottom: 0;
+  }
+
+  to {
+    transform: translateY(-1000px) rotate(180deg);
+    opacity: 0;
+  }
+}
+
+@keyframes shake {
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+
+  20%,
+  80% {
+    transform: translate3d(2px, 2px, 0);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-2px, -2px, 0);
+  }
+
+  40%,
+  60% {
+    transform: translate3d(2px, 0, 0);
+  }
+}
